@@ -6,6 +6,56 @@ function Book(title, author, isbn) {
     this.isbn = isbn;
 }
 
+
+// Store constructor
+function Store() {}
+
+// Get books from store
+Store.prototype.getBooks = function() {
+    let books;
+    if (localStorage.getItem('books') === null) {
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+
+    return books;
+}
+
+// Display books 
+Store.prototype.displayBooks = function(msg) {
+    books = this.getBooks();
+    books.forEach(function(book) {
+        const ui = new UI;
+
+        // Add book to UI
+        ui.addBookToList(book);
+    });
+}
+
+// Add book to store
+Store.prototype.addBook = function(book) {
+    const books = this.getBooks();
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
+}
+
+// Remove book from store
+Store.prototype.removeBook = function(isbn) {
+    const books = this.getBooks();
+
+    books.forEach(function(book, index) {
+        if (book.isbn === isbn) {
+            //books.splice(index, 1);
+            console.log(book.isbn)
+        }
+
+    });
+    //console.log(books);
+
+    localStorage.setItem('books', JSON.stringify(books));
+}
+
 // UI Constructor
 
 function UI() {}
@@ -57,6 +107,7 @@ UI.prototype.deleteBook = function(target) {
         const ui = new UI();
         // Show alert 
         ui.showAlert('Book removed!', 'success');
+
     }
 }
 
@@ -67,6 +118,12 @@ UI.prototype.clearFields = function() {
     document.getElementById('isbn').value = '';
 }
 
+// DOM Load Event
+document.addEventListener('DOMContentLoaded', function() {
+    // Instantiate Store
+    const store = new Store();
+    store.displayBooks();
+});
 
 // Event Listeners for add book
 document.getElementById('book-form').addEventListener('submit',
@@ -92,6 +149,10 @@ document.getElementById('book-form').addEventListener('submit',
             // Add book to list 
             ui.addBookToList(book);
 
+            // Add book to store
+            const store = new Store();
+            store.addBook(book);
+
             // UI show alert
             ui.showAlert('Book added!', 'success');
 
@@ -107,7 +168,10 @@ document.getElementById('book-list').addEventListener('click', function(e) {
 
     // Instantiate UI 
     const ui = new UI();
-
+    // Instantiant Store
+    const store = new Store();
+    // Remove book from store
+    store.removeBook(e.target.parentElement.previousElementSibling.textContent);
     // Delete book
     ui.deleteBook(e.target);
 

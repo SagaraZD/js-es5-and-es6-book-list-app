@@ -91,7 +91,7 @@ class Store {
         const books = Store.getBooks();
 
         books.forEach(function(book, index) {
-            if (book.isbn === isbn) {
+            if (book.isbn == isbn) {
                 books.splice(index, 1);
             }
         });
